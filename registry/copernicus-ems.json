@@ -1,0 +1,15 @@
+{
+  "id": "copernicus-ems",
+  "name": "Copernicus EMS Rapid Mapping",
+  "version": "0.2.0",
+  "description": "Browse CEMS Rapid Mapping activations and load AOIs, product vectors, and source COG imagery.",
+  "author": "Joao Pereira",
+  "homepage": "https://github.com/JPPereira93/geolibre-copernicus-ems",
+  "manifestUrl": "plugins/copernicus-ems/plugin.json",
+  "source": {
+    "url": "https://github.com/opengeos/geolibre-plugins/releases/download/bundles-2026-10/copernicus-ems-0.2.0.zip",
+    "sha256": "9bd14c5c086c2e610fc8ea01d8d89ee5ee5fc83c99c504948dfa91a64ce77afd"
+  },
+  "categories": ["Data", "Imagery"],
+  "minGeoLibreVersion": "2.7.0"
+}

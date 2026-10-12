@@ -1,0 +1,18 @@
+{
+  "name": "geolibre-plugins",
+  "private": true,
+  "type": "module",
+  "description": "Tooling for the GeoLibre plugin registry. The registry is plain JSON assembled from registry/*.json.",
+  "license": "MIT",
+  "scripts": {
+    "build:registry": "node scripts/build_registry.mjs",
+    "validate": "node scripts/validate_plugins.mjs",
+    "test": "node --test 'worker/test/*.test.mjs' 'scripts/test/*.test.mjs'",
+    "test:scripts": "node --test 'scripts/test/*.test.mjs'",
+    "test:worker": "node --test 'worker/test/*.test.mjs'"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "fflate": "0.8.3"
+  }
+}

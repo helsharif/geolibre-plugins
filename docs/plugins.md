@@ -5,92 +5,217 @@ hide:
 
 # Plugins
 
-There are **7** plugins in the registry. Install them from GeoLibre: open **Settings → Manage Plugins**, then **Install** from the **All** or **Not installed** tab. No manual URL entry needed.
+There are **16** plugins in the registry. Install them from GeoLibre: open **Settings → Manage Plugins**, then **Install** from the **All** or **Not installed** tab. No manual URL entry needed.
 
-<div class="grid cards" markdown>
+<div class="plugin-filters" hidden>
+  <input type="search" class="plugin-search md-input" placeholder="Search plugins" aria-label="Search plugins">
+  <div class="plugin-categories" role="group" aria-label="Filter by category">
+    <button type="button" class="md-tag" data-category="Analysis" aria-pressed="false">Analysis</button>
+    <button type="button" class="md-tag" data-category="Archaeology" aria-pressed="false">Archaeology</button>
+    <button type="button" class="md-tag" data-category="Climate" aria-pressed="false">Climate</button>
+    <button type="button" class="md-tag" data-category="Data" aria-pressed="false">Data</button>
+    <button type="button" class="md-tag" data-category="Example" aria-pressed="false">Example</button>
+    <button type="button" class="md-tag" data-category="Hydrology" aria-pressed="false">Hydrology</button>
+    <button type="button" class="md-tag" data-category="Imagery" aria-pressed="false">Imagery</button>
+    <button type="button" class="md-tag" data-category="Raster" aria-pressed="false">Raster</button>
+    <button type="button" class="md-tag" data-category="Terrain" aria-pressed="false">Terrain</button>
+    <button type="button" class="md-tag" data-category="Visualization" aria-pressed="false">Visualization</button>
+  </div>
+  <p class="plugin-count" aria-live="polite"></p>
+</div>
 
--   :material-puzzle:{ .lg .middle } __Data to Science (D2S)__
+<div class="grid cards plugin-catalog" markdown>
+
+-   :material-puzzle:{ .lg .middle } [__AORCtoDSS__](catalog/aorctodss.md)
 
     ---
 
-    Browse and view Data to Science (D2S) projects, flights, and data products. Add raster data products as titiler tiles and project vector layers (FlatGeobuf) to the map, with automatic zoom to added layers.
+    Prepare NOAA AORC watershed time series, variable\-aware event summaries, animations, and SHG HEC\-DSS grids\. Requires Windows and the AORCtoDSS companion service\.
 
-    **Author:** Qiusheng Wu · **Version:** 0.1.1 · **Requires:** GeoLibre 0.9.0+
+    **Author:** Mohsen Tahmasebi Nasab · **Version:** 0\.2\.0 · **Requires:** GeoLibre 2\.4\.0+
+
+    `Climate` `Raster` `Data`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/mohsennasab/aorc-to-dss){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/aorctodss/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__Contour Lines from DEM__](catalog/geolibre-contour.md)
+
+    ---
+
+    Generate dynamic contour lines from loaded Cloud\-Optimized GeoTIFF elevation rasters\.
+
+    **Author:** Cedric Bouffard · **Version:** 0\.3\.7 · **Requires:** GeoLibre 0\.9\.0+
+
+    `Raster` `Visualization`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/cedricbouffard/geolibre-contour){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-contour/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__Copernicus EMS Rapid Mapping__](catalog/copernicus-ems.md)
+
+    ---
+
+    Browse CEMS Rapid Mapping activations and load AOIs, product vectors, and source COG imagery\.
+
+    **Author:** Joao Pereira · **Version:** 0\.2\.0 · **Requires:** GeoLibre 2\.7\.0+
+
+    `Data` `Imagery`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/JPPereira93/geolibre-copernicus-ems){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/copernicus-ems/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__Data to Science \(D2S\)__](catalog/geolibre-d2s.md)
+
+    ---
+
+    Browse and view Data to Science \(D2S\) projects, flights, and data products\. Add raster data products as titiler tiles and project vector layers \(FlatGeobuf\) to the map, with automatic zoom to added layers\.
+
+    **Author:** Qiusheng Wu · **Version:** 0\.2\.0 · **Requires:** GeoLibre 0\.9\.0+
 
     `Data` `Imagery`
 
     [:octicons-mark-github-16: Homepage](https://github.com/opengeos/geolibre-d2s){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-d2s/plugin.json){ target=_blank }
 
--   :material-puzzle:{ .lg .middle } __HyperCoast__
+-   :material-puzzle:{ .lg .middle } [__Energy Data__](catalog/geoenergy-catalog.md)
 
     ---
 
-    Visualize and analyze hyperspectral imagery (EMIT, PACE, NEON, PRISMA, Tanager, AVIRIS, DESIS, EnMAP, Wyvern). Load a scene, build a wavelength-based RGB composite with adjustable bands and reflectance stretch, click pixels to plot reflectance spectra, and export the collected spectra to CSV. The control follows the host app's light/dark theme.
+    A curated catalog of U\.S\. energy datasets: generation, transmission, data centers, fuels and reliability\.
 
-    **Author:** Qiusheng Wu · **Version:** 0.1.0 · **Requires:** GeoLibre 0.9.0+
+    **Author:** Xinming Andy Zhang · **Version:** 1\.0\.0 · **Requires:** GeoLibre 3\.0\.0+
+
+    `Data`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/Andyzxm/geolibre-energy-plugin){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geoenergy-catalog/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__Flowmaps\.gl__](catalog/geolibre-plugin-flowmaps.md)
+
+    ---
+
+    A plugin for visualizing origin\-destination data using flowmap\.gl\.
+
+    **Author:** Kai Erlenbusch · **Version:** 0\.1\.0 · **Requires:** GeoLibre 0\.9\.0+
+
+    `Visualization`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/kai-erlenbusch/geolibre-plugin-flowmaps){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-plugin-flowmaps/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__HyperCoast__](catalog/geolibre-hypercoast.md)
+
+    ---
+
+    Visualize and analyze hyperspectral imagery \(EMIT, PACE, NEON, PRISMA, Tanager, AVIRIS, DESIS, EnMAP, Wyvern\)\. Load a scene, build a wavelength\-based RGB composite with adjustable bands and reflectance stretch, click pixels to plot reflectance spectra, and export the collected spectra to CSV\. The control follows the host app's light/dark theme\.
+
+    **Author:** Qiusheng Wu · **Version:** 0\.1\.0 · **Requires:** GeoLibre 0\.9\.0+
 
     `Data` `Imagery`
 
     [:octicons-mark-github-16: Homepage](https://github.com/opengeos/geolibre-hypercoast){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-hypercoast/plugin.json){ target=_blank }
 
--   :material-puzzle:{ .lg .middle } __KML / KMZ Import__
+-   :material-puzzle:{ .lg .middle } [__iNaturalist Extractor__](catalog/geolibre-inaturalist-extractor.md)
 
     ---
 
-    Import styled KML and KMZ files as organized GeoLibre vector and globe-compatible raster layers, with local parsing, feature information, altitude-aware 3D points, and GroundOverlay conversion.
+    Fetch georeferenced iNaturalist observations by map view or layer extent, with species, date, observer, quality\-grade and advanced \(taxon ID, place ID, photo license, project, annotation\) filters, and a photo popup\.
 
-    **Author:** Husayn El Sharif · **Version:** 0.3.1 · **Requires:** GeoLibre 2.2.0+
+    **Author:** Defani Arman \(Alfitriansyah\) · **Version:** 1\.5\.0 · **Requires:** GeoLibre 3\.0\.0+
 
-    `Data` `Raster` `Vector`
+    `Data`
 
-    [:octicons-mark-github-16: Homepage](https://github.com/helsharif/geolibre-kml-kmz-import){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/kml-kmz-import/plugin.json){ target=_blank }
+    [:octicons-mark-github-16: Homepage](https://github.com/Defani/Geolibre-Inaturalist-Extraction-Plugins){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-inaturalist-extractor/plugin.json){ target=_blank }
 
--   :material-puzzle:{ .lg .middle } __NASA OPERA__
+-   :material-puzzle:{ .lg .middle } [__movecost — least\-cost analysis__](catalog/movecost.md)
 
     ---
 
-    Search, visualize, and analyze NASA OPERA products with GeoAgent-assisted CMR search, titiler-cmr raster display, change detection, time-series statistics, report export, pixel inspection, AOI statistics, and granule downloads. No Earthdata login needed for search or display.
+    Least\-cost paths, corridors, networks, cost allocation, isochrones and ranked alternative paths on a DEM with the movecost R package \(26 slope\-dependent cost functions\), running in the browser through webR or against a local R service\. Download the DEM for a drawn area or upload a GeoTIFF\.
 
-    **Author:** Qiusheng Wu · **Version:** 0.3.0 · **Requires:** GeoLibre 0.9.0+
+    **Author:** Enzo Cocca · **Version:** 0\.2\.4 · **Requires:** GeoLibre 2\.9\.0+
+
+    `Analysis` `Archaeology` `Terrain`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/enzococca/geolibre-movecost){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/movecost/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__NASA OPERA__](catalog/geolibre-nasa-opera.md)
+
+    ---
+
+    Search, visualize, and analyze NASA OPERA products with GeoAgent\-assisted CMR search, titiler\-cmr raster display, change detection, time\-series statistics, report export, pixel inspection, AOI statistics, and granule downloads\. No Earthdata login needed for search or display\.
+
+    **Author:** Qiusheng Wu · **Version:** 0\.4\.0 · **Requires:** GeoLibre 0\.9\.0+
 
     `Data` `Imagery`
 
     [:octicons-mark-github-16: Homepage](https://github.com/opengeos/geolibre-nasa-opera){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-nasa-opera/plugin.json){ target=_blank }
 
--   :material-puzzle:{ .lg .middle } __NetCDF Loader__
+-   :material-puzzle:{ .lg .middle } [__NetCDF Loader__](catalog/geolibre-netcdf.md)
 
     ---
 
-    Load NetCDF4/HDF5 climate grids into GeoLibre as color-mapped raster layers with date-based time controls, colormaps, and pixel value inspection.
+    Load NetCDF4/HDF5 climate grids into GeoLibre as color\-mapped raster layers with date\-based time controls, colormaps, and pixel value inspection\.
 
-    **Author:** Husayn El Sharif · **Version:** 0.5.9 · **Requires:** GeoLibre 1.9.0+
+    **Author:** Husayn El Sharif · **Version:** 0\.5\.9 · **Requires:** GeoLibre 1\.9\.0+
 
     `Climate` `Raster` `Data`
 
     [:octicons-mark-github-16: Homepage](https://github.com/helsharif/geolibre-netcdf-loader-plugin){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-netcdf/plugin.json){ target=_blank }
 
--   :material-puzzle:{ .lg .middle } __Sample Plugin__
+-   :material-puzzle:{ .lg .middle } [__Open Climate Service__](catalog/open-climate-service.md)
 
     ---
 
-    An example plugin that adds a map control and demonstrates the plugin UI surface APIs: a shared-rail right-sidebar panel (dock: replace-style, sharing the Style rail), a top toolbar menu, and a floating panel. Use it as a template for marketplace entries.
+    Browse an Open Climate Service \(OCS\) STAC catalog and render its published GeoZarr datasets\.
 
-    **Author:** GeoLibre · **Version:** 1.2.0 · **Requires:** GeoLibre 0.9.0+
+    **Author:** DHIS2 for Climate &amp; Health · **Version:** 0\.2\.1 · **Requires:** GeoLibre 2\.4\.0+
+
+    `Climate` `Raster` `Data`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/dhis2/open-climate-service-geolibre-plugin){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/open-climate-service/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__RNDT catalogue__](catalog/openrndt-geolibre.md)
+
+    ---
+
+    Search the Italian national catalogue of spatial data \(RNDT\) and add its WMS/WFS services to the map\.
+
+    **Author:** onData · **Version:** 0\.2\.0 · **Requires:** GeoLibre 3\.2\.0+
+
+    `Data`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/ondata/openrndt-geolibre){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/openrndt-geolibre/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__Sample Plugin__](catalog/geolibre-sample-plugin.md)
+
+    ---
+
+    An example plugin that adds a map control and demonstrates the plugin UI surface APIs: a shared\-rail right\-sidebar panel \(dock: replace\-style, sharing the Style rail\), a top toolbar menu, and a floating panel\. Use it as a template for marketplace entries\.
+
+    **Author:** GeoLibre · **Version:** 1\.2\.0 · **Requires:** GeoLibre 0\.9\.0+
 
     `Example`
 
     [:octicons-mark-github-16: Homepage](https://github.com/opengeos/geolibre-plugins){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/sample/plugin.json){ target=_blank }
 
--   :material-puzzle:{ .lg .middle } __Vantor Open Data__
+-   :material-puzzle:{ .lg .middle } [__StreamSnap__](catalog/streamsnap.md)
 
     ---
 
-    Search, visualize, and download satellite imagery from the Vantor Open Data STAC catalog. Browse disaster event collections, filter by phase and map extent, view pre/post footprints, render Cloud-Optimized GeoTIFFs on the map, and download selected scenes.
+    Match river monitoring sites to the correct stream segment interactively and snap sites onto the network\.
 
-    **Author:** Qiusheng Wu · **Version:** 0.2.1 · **Requires:** GeoLibre 1.8.0+
+    **Author:** wangzcl@WEN\-Research\-Group · **Version:** 0\.1\.1 · **Requires:** GeoLibre 2\.9\.0+
 
-    `Data` `Imagery`
+    `Hydrology`
 
-    [:octicons-mark-github-16: Homepage](https://github.com/opengeos/maplibre-gl-vantor){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/maplibre-gl-vantor/plugin.json){ target=_blank }
+    [:octicons-mark-github-16: Homepage](https://github.com/WEN-Research-Group/StreamSnap){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/streamsnap/plugin.json){ target=_blank }
+
+-   :material-puzzle:{ .lg .middle } [__US Live Flood Gauges__](catalog/geolibre-flood-gauges.md)
+
+    ---
+
+    NOAA/NWPS river and coastal gauges\. For informational purposes only\. Not for life\-safety decisions\. Flood\-category symbology, H3 overview, hydrographs, and deep links\. By flood\.live\.
+
+    **Author:** chuofringer \(flood\.live\) · **Version:** 0\.4\.1 · **Requires:** GeoLibre 2\.0\.0+
+
+    `Hydrology` `Data`
+
+    [:octicons-mark-github-16: Homepage](https://github.com/chuofringer/geolibre-flood-gauges){ target=_blank } · [:octicons-package-16: Manifest](https://plugins.geolibre.app/plugins/geolibre-flood-gauges/plugin.json){ target=_blank }
 
 </div>

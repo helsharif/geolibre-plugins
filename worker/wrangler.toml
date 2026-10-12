@@ -1,0 +1,27 @@
+# Serves R2-mirrored plugin files at plugins.geolibre.app/plugins/* and passes
+# everything else through to GitHub Pages. See worker/src/index.js.
+#
+#   npx wrangler deploy --config worker/wrangler.toml
+name = "geolibre-plugins-mirror"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+
+routes = [
+  { pattern = "plugins.geolibre.app/plugins/*", zone_name = "geolibre.app" },
+]
+
+[[r2_buckets]]
+binding = "PLUGINS"
+bucket_name = "geolibre-plugins"
+
+# Anonymous plugin usage counts (src/stats.js, schema.sql). The weekly salt
+# for visitor hashes comes from the STATS_SALT secret:
+#   npx wrangler secret put STATS_SALT --config worker/wrangler.toml
+[[d1_databases]]
+binding = "STATS"
+database_name = "geolibre-plugins-stats"
+database_id = "6227454a-7ca7-4146-9514-39883aaef58a"
+
+[triggers]
+crons = ["15 0 * * *"]

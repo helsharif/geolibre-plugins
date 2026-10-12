@@ -6,8 +6,9 @@ This repository is published to GitHub Pages at **https://plugins.geolibre.app**
 and hosts:
 
 - `plugin-registry.json` — the curated index the GeoLibre Manage Plugins dialog
-  reads (`https://plugins.geolibre.app/plugin-registry.json`).
-- A `plugins/` directory with one folder per plugin (e.g. `plugins/sample/`),
+  reads (`https://plugins.geolibre.app/plugin-registry.json`). It is generated
+  at deploy time from one file per plugin in `registry/<id>.json`.
+- A `plugins/` directory with one folder per plugin (e.g. `plugins/movecost/`),
   each containing its `plugin.json` manifest and built assets.
 
 GitHub Pages serves these files with permissive CORS, so the GeoLibre app
@@ -15,7 +16,8 @@ GitHub Pages serves these files with permissive CORS, so the GeoLibre app
 
 ## Registry format
 
-`plugin-registry.json` is an object with a `plugins` array. Each entry:
+`plugin-registry.json` is an object with a `plugins` array. Each entry comes
+from its own `registry/<id>.json` file, which holds just that entry:
 
 ```json
 {
@@ -37,6 +39,23 @@ GitHub Pages serves these files with permissive CORS, so the GeoLibre app
   absolute HTTPS URL pointing at a plugin hosted elsewhere.
 - `homepage` must be `http(s)`; other schemes are dropped by the app.
 - `minGeoLibreVersion` gates installation against the running app version.
+- The generated registry adds a `bundleSha256` to each plugin hosted here, so
+  GeoLibre can check that the code it downloads is the code that was reviewed.
+  It is computed at build time; don't add it yourself.
+- `categories` takes one to four values from a fixed list: `Analysis`,
+  `Archaeology`, `Basemaps`, `Cartography`, `Climate`, `Data`, `Ecology`,
+  `Example`, `Hydrology`, `Imagery`, `Oceans`, `Raster`, `Terrain`,
+  `Utilities`, `Vector`, `Visualization`. Open an issue to propose a new one.
+- For the catalog page only (GeoLibre ignores them): `repository` and `issues`
+  (HTTPS URLs), `license` (an SPDX identifier such as `MIT`), and up to four
+  `screenshots`, each `{ "path": "screenshots/main.png", "caption": "..." }`
+  naming a PNG, JPEG or WebP file of at most 1 MiB in the release zip. See
+  [Registry format](https://plugins.geolibre.app/registry/).
+
+[`schemas/registry-entry.schema.json`](schemas/registry-entry.schema.json) and
+[`schemas/plugin-manifest.schema.json`](schemas/plugin-manifest.schema.json)
+define both formats. `npm run validate` checks them, and VS Code picks them up
+from `.vscode/settings.json`.
 
 ## Plugin manifest
 
@@ -56,20 +75,26 @@ plugin loader expects):
 `entry` must be a self-contained ES module exporting a `GeoLibrePlugin` as the
 default or a named `plugin` export, with `id`/`name`/`version` matching the
 manifest. `entry` and `style` are resolved relative to the manifest, so keep
-them inside the plugin's own folder. See [`sample/`](./sample) for a minimal,
+them inside the plugin's own folder. See [`examples/sample/`](./examples/sample) for a minimal,
 copy-ready template.
 
 ## Contributing a plugin
 
 Plugins are **trusted code** that runs with full app privileges, so the registry
 is curated: open a pull request and a maintainer reviews it before it ships.
+[`CODEOWNERS`](.github/CODEOWNERS) requests a maintainer's review on every pull
+request automatically.
+
+To report a malicious plugin or a vulnerability in the registry, see
+[`SECURITY.md`](SECURITY.md): report it privately, not in a public issue. For a
+plugin that is broken or misdescribed, use the **Report a plugin** issue form.
 
 > **Start from the template:** the
 > [geolibre-plugin-template](https://github.com/opengeos/geolibre-plugin-template)
 > is the recommended starting point for plugin development. It includes a
 > MapLibre control wrapper, a `plugin.json` manifest, a GeoLibre plugin entry
 > point, and a build that produces the bundle layout below. The
-> [`sample/`](./sample) plugin here is a minimal in-repo example.
+> [`examples/sample/`](./examples/sample) plugin here is a minimal in-repo example.
 
 ### 1. Build a plugin entry
 
@@ -97,20 +122,62 @@ export default plugin;
 External plugins must **not** set `activeByDefault`. The optional `style` CSS is
 injected globally, so scope your selectors (e.g. a plugin-specific class prefix);
 `hsl(var(--foreground))` and the other GeoLibre design tokens are available so a
-control can match the in-app light/dark theme. Copy [`sample/`](./sample) as a
+control can match the in-app light/dark theme. Copy [`examples/sample/`](./examples/sample) as a
 starting point.
 
+Installed plugins are listed under **Plugins → Installed** automatically. To add
+a few actions to a built-in menu (Add Data, Processing, or Controls), prefer
+`app.registerMenuContribution?.()` over a top-level `app.registerToolbarMenu?.()`
+menu; see [Develop a plugin](https://plugins.geolibre.app/develop/#where-your-plugin-shows-up-in-the-menus).
+
 ### 2. Add the plugin folder
+
+> **Prefer a release zip.** Every plugin in the registry is now served from a
+> release zip ([Or host it from a release zip](#or-host-it-from-a-release-zip)
+> below), which keeps built code out of this repository. Committing a folder
+> still works.
 
 Create `plugins/<id>/` containing `plugin.json`, the built `entry` JS, and any
 `style` CSS. Keep `entry`/`style` paths relative and inside the folder.
 
+Commit the bundle as your build emits it; nothing reformats it. Build it
+minified, since every line of a committed bundle is part of the diff a
+reviewer has to page through. The same goes for a release zip's bundle: it is
+served exactly as built, so minifying it is what keeps downloads small.
+
 ### 3. Register it
 
-Add an entry to `plugin-registry.json` with `manifestUrl` pointing at
+Add a `registry/<id>.json` file holding your plugin's registry entry (the file
+name must match its `id`), with `manifestUrl` pointing at
 `plugins/<id>/plugin.json` (relative) — or an absolute HTTPS URL if you host the
 plugin elsewhere. Set `minGeoLibreVersion` to the lowest GeoLibre version you
-support.
+support. Don't edit `plugin-registry.json`: it is generated from `registry/`
+when the site is deployed, so pull requests for different plugins never
+conflict.
+
+#### Or host it from a release zip
+
+Instead of committing the bundle, you can point the registry entry at a
+release zip you publish in your own repository: add a `source` with the zip's
+HTTPS URL and its SHA-256, keep `manifestUrl` as `plugins/<id>/plugin.json`,
+and leave `plugins/<id>/` out of this repository:
+
+```json
+"manifestUrl": "plugins/my-plugin/plugin.json",
+"source": {
+  "url": "https://github.com/owner/my-plugin/releases/download/v1.0.0/my-plugin-1.0.0.zip",
+  "sha256": "<output of sha256sum my-plugin-1.0.0.zip>"
+}
+```
+
+The zip uses the same layout as a GeoLibre zip install: `plugin.json` at the
+root or inside one top-level folder, with `entry` and `style` beside it. CI
+downloads it, checks the hash, and validates it like a committed plugin. The
+automated pull-request review also unpacks it and reviews the plugin's code
+for security issues, and reports the zip's size and what it unpacks to. On
+merge it is copied to `plugins.geolibre.app/plugins/<id>/<version>/`, which
+never changes once published, so a new release needs a new `version` and a new
+`source`. Users keep installing from the same `plugins/<id>/plugin.json` URL.
 
 ### 4. Test locally
 
@@ -118,6 +185,8 @@ Point a local GeoLibre build at your branch's registry, then open
 **Settings → Manage Plugins** and install it:
 
 ```bash
+npm run build:registry   # generate plugin-registry.json from registry/
+npm run validate         # check every entry and import every bundle
 # serve this repo with CORS on http://localhost:8090, then build GeoLibre with:
 VITE_GEOLIBRE_PLUGIN_REGISTRY_URL=http://localhost:8090/plugin-registry.json
 ```
@@ -132,10 +201,10 @@ the update to `plugins.geolibre.app`.
 
 ### Updating a plugin
 
-Bump `version` in both the plugin's `plugin.json` **and** its registry entry,
-update the built assets, and open a PR. GeoLibre shows an **Update** action to
-users whose installed version is older than the registry version; uninstalling
-removes it at runtime.
+Bump `version` in both the plugin's `plugin.json` **and** its
+`registry/<id>.json` entry, update the built assets, and open a PR. GeoLibre
+shows an **Update** action to users whose installed version is older than the
+registry version; uninstalling removes it at runtime.
 
 ## Deployment
 
@@ -147,3 +216,115 @@ verbatim.
 > One-time setup: enable **Settings → Pages → Source: GitHub Actions**, and add
 > a DNS `CNAME` record for `plugins.geolibre.app` pointing at
 > `opengeos.github.io`.
+
+### Docs site
+
+The catalog page (`docs/plugins.md`) and one page per plugin
+(`docs/catalog/<id>.md`, not committed) are generated from the registry. To
+preview the site locally:
+
+```bash
+npm ci && pip install -r requirements.txt
+node scripts/build_registry.mjs        # bundle hashes for the plugin pages
+python scripts/generate_plugins_page.py
+mkdocs serve
+```
+
+### Usage statistics
+
+The mirror Worker also counts plugin use: each fetch of a plugin's stable
+`plugins/<dir>/plugin.json` (GeoLibre fetches it at every start) is recorded in
+the `geolibre-plugins-stats` D1 database as a weekly visitor hash plus a daily
+launch count, and served at `plugins/stats.json`. A daily cron rolls finished
+weeks up into counts and deletes their hashes. See
+[`worker/src/stats.js`](worker/src/stats.js) and
+[Registry format](https://plugins.geolibre.app/registry/#usage-statistics) for
+what is and isn't kept. The Worker's unit tests emulate D1 with Node's SQLite;
+see [Tests and monitoring](#tests-and-monitoring).
+
+> One-time setup (already done for plugins.geolibre.app): create the database
+> and set the salt secret. The deploy workflow below applies the schema.
+>
+> ```bash
+> npx wrangler d1 create geolibre-plugins-stats   # put its id in worker/wrangler.toml
+> npx wrangler secret put STATS_SALT --config worker/wrangler.toml   # any long random string
+> ```
+
+### Deploying the Worker
+
+The [Deploy mirror Worker](.github/workflows/deploy-worker.yml) workflow
+deploys `worker/` whenever it changes on `main` (or when run by hand): it runs
+the Worker tests, applies `worker/schema.sql`, deploys, and then checks that
+the live site still serves every plugin. It needs the repository secret
+`CLOUDFLARE_WORKERS_TOKEN`, a Cloudflare API token with Workers Scripts Edit,
+D1 Edit and Workers R2 Storage Read on the account, and Workers Routes Edit on
+the `geolibre.app` zone (alongside `CLOUDFLARE_ACCOUNT_ID`). To deploy by hand
+instead: `npx wrangler deploy --config worker/wrangler.toml`.
+
+### Tests and monitoring
+
+`npm test` runs the unit tests: the mirror Worker (`worker/test/`) and the
+scripts that download and unpack untrusted release zips (`scripts/test/`).
+They need no network; test zips are put in the download cache directly. PR CI
+runs them on every pull request (`npm run test:worker` and
+`npm run test:scripts` run one set).
+
+Every night the **Test Plugins** workflow also checks the live site:
+`scripts/check_deployed.mjs` re-hashes every published bundle against the
+registry, and `scripts/check_stats.mjs` checks that `plugins/stats.json` is
+current and that the daily roll-up has deleted the visitor hashes of finished
+weeks. GitHub emails a failed scheduled run to whoever last changed its
+schedule.
+
+### Blocking a plugin
+
+To stop a malicious or broken plugin on every install, add an entry to
+[`blocklist.json`](blocklist.json) (see
+[Registry format](https://plugins.geolibre.app/registry/#blocklistjson)):
+
+- To block one bad version, add its `id` and the `bundleSha256` from
+  `plugin-registry.json`, and point its registry entry at a fixed release (or
+  remove the entry).
+- To block every version, add only the `id` and delete
+  `registry/<id>.json`.
+
+Give a short `reason` (users see it) and the `date`. CI refuses a blocklist
+that the registry contradicts.
+
+### Release-zip mirror
+
+Plugins with a `source` are served from the `geolibre-plugins` R2 bucket by the
+`geolibre-plugins-mirror` Worker ([`worker/`](worker/)), routed on
+`plugins.geolibre.app/plugins/*`. The Worker serves an object when the bucket
+has one and passes every other request through to Pages, so committed plugins
+are unaffected. The bucket has no public domain of its own; only the Worker
+reads it. An object in the bucket takes precedence over Pages, so moving a
+plugin back to a committed folder also means deleting its `plugins/<id>/`
+objects from the bucket.
+
+Before the registry is deployed, `scripts/publish_sources.mjs` uploads each
+release to `plugins/<id>/<version>/` and then switches the stable
+`plugins/<id>/plugin.json` to it, so the live registry never lists a hash the
+mirror can't serve. The reverse can briefly happen: between that switch and the
+Pages deploy finishing (a minute or two, plus the manifest's 60-second cache),
+the old registry's hash doesn't match the new code. An install in that window
+is held back; installing again or using **Update** once the new registry is
+live fixes it.
+
+To move a committed plugin to the mirror without changing what users run:
+
+1. `node scripts/make_migration_zip.mjs plugins/<dir>` builds a reproducible
+   zip of the committed files and prints its SHA-256.
+2. Upload it to the `bundles-2026-10` release (`gh release upload`).
+3. Add `source` to the plugin's registry entry, keep its `manifestUrl`, and
+   delete `plugins/<dir>/`. `bundleSha256` must not change, so existing
+   installs keep their integrity pins.
+
+The sample plugin's readable source lives in [`examples/sample/`](examples/sample),
+which isn't served; its served copy comes from the release zip.
+
+> One-time setup: the Worker is deployed by the
+> [Deploy mirror Worker](#deploying-the-worker) workflow; add the repository
+> secrets `CLOUDFLARE_R2_TOKEN` (an API token with R2 write access to the
+> `geolibre-plugins` bucket) and `CLOUDFLARE_ACCOUNT_ID`. They're only needed
+> once an entry has a `source`.

@@ -1,0 +1,37 @@
+{
+  "id": "openrndt-geolibre",
+  "name": "RNDT catalogue",
+  "version": "0.3.12",
+  "description": "Search the Italian national catalogue of spatial data (RNDT) and add its WMS/WFS services to the map.",
+  "author": "onData",
+  "homepage": "https://github.com/ondata/openrndt-geolibre",
+  "repository": "https://github.com/ondata/openrndt-geolibre",
+  "issues": "https://github.com/ondata/openrndt-geolibre/issues",
+  "license": "MIT",
+  "manifestUrl": "plugins/openrndt-geolibre/plugin.json",
+  "source": {
+    "url": "https://github.com/ondata/openrndt-geolibre/releases/download/v0.3.12/openrndt-geolibre-0.3.12.zip",
+    "sha256": "409fe7b3d47472fba123e1b93dffb60db50b3b016edb7c511c098b50863d85fa"
+  },
+  "categories": ["Data"],
+  "publishableSettings": true,
+  "minGeoLibreVersion": "3.3.0",
+  "screenshots": [
+    {
+      "path": "screenshots/search.webp",
+      "caption": "A search of the national catalogue: the records listed in the panel, their footprints on the map."
+    },
+    {
+      "path": "screenshots/record.webp",
+      "caption": "A record's detail view: its abstract and the layers of its WFS and WMS services, with readable names."
+    },
+    {
+      "path": "screenshots/layers.webp",
+      "caption": "WMS layers of a record added to the map."
+    },
+    {
+      "path": "screenshots/identify.webp",
+      "caption": "A feature of an added WMS layer queried with GeoLibre's Identify."
+    }
+  ]
+}

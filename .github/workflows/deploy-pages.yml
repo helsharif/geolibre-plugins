@@ -1,9 +1,10 @@
 name: Deploy to GitHub Pages
 
 # Builds the MkDocs documentation site and publishes it to GitHub Pages at the
-# custom domain in CNAME (plugins.geolibre.app). The raw plugin-registry.json
-# and each plugin bundle are copied alongside the site so they stay served from
-# the domain root (where the GeoLibre app fetches them).
+# custom domain in CNAME (plugins.geolibre.app). plugin-registry.json is
+# generated from registry/*.json, then it and each plugin bundle are copied
+# alongside the site so they stay served from the domain root (where the
+# GeoLibre app fetches them).
 
 on:
   push:
@@ -28,10 +29,46 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      # Release zips are content-addressed by SHA-256, so a cached copy is
+      # always the right one; this saves re-downloading every zip per deploy.
+      - name: Cache release zips
+        uses: actions/cache@v6
+        with:
+          path: .cache/sources
+          key: release-zips-${{ hashFiles('registry/*.json') }}
+          restore-keys: release-zips-
+
+      # Never publish an entry that fails validation, even when this runs from
+      # workflow_dispatch or a push that skipped the Test Plugins checks.
+      - name: Validate plugin registry
+        run: node scripts/validate_plugins.mjs
+
+      # Plugins hosted from release zips are served from R2 by the
+      # geolibre-plugins-mirror Worker (worker/). Upload them before the new
+      # registry goes live, so it never lists a hash the mirror can't serve.
+      # A no-op, needing no secrets, while no entry has a `source`.
+      - name: Mirror release-zip plugins to R2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/publish_sources.mjs
+
+      - name: Generate plugin-registry.json
+        run: node scripts/build_registry.mjs
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
 
@@ -45,7 +82,7 @@ jobs:
 
       - name: Add registry, plugin bundles, and Pages metadata to the site
         run: |
-          cp plugin-registry.json site/
+          cp plugin-registry.json blocklist.json site/
           # Publish the plugin bundles under /plugins/<id>/. mkdocs already built
           # the catalog page at site/plugins/index.html, so merge the bundles in
           # alongside it rather than replacing the directory.
@@ -53,6 +90,8 @@ jobs:
             mkdir -p site/plugins
             cp -r plugins/. site/plugins/
           fi
+          # Serve the schemas at the URLs in their $id.
+          cp -r schemas site/
           cp CNAME .nojekyll site/
 
       - name: Configure Pages
@@ -69,3 +108,11 @@ jobs:
         uses: actions/deploy-pages@v5
         with:
           artifact_name: github-pages-${{ github.run_attempt }}
+
+      # GeoLibre refuses a bundle whose hash differs from the registry's
+      # bundleSha256, so confirm the deployed site serves exactly what was
+      # built. The site is already live by now, so a failure is an alert.
+      - name: Check published bundles against the registry
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: node scripts/check_deployed.mjs "$PAGE_URL" --expected plugin-registry.json
